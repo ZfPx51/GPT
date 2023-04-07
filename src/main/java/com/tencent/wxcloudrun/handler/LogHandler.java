@@ -23,20 +23,7 @@ public class LogHandler extends AbstractHandler {
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
                                     Map<String, Object> context, WxMpService wxMpService,
                                     WxSessionManager sessionManager) {
-        this.logger.info("\n接收到请求消息，内容：{}", JsonUtils.toJson(wxMessage));
-        // 获取用户OpenID
-        String openid = wxMessage.getFromUser();
-
-        String msg= OpenAIAPI.chat(wxMessage.getContent());
-        WxMpKefuMessage textMessage = WxMpKefuMessage.TEXT().toUser(openid)
-            .content(msg).build();
-
-        try {
-            wxMpService.getKefuService().sendKefuMessage(textMessage);
-        } catch (WxErrorException e) {
-            e.printStackTrace();
-        }
-
+        this.logger.info("\nLOG 接收到请求消息，内容：{}", JsonUtils.toJson(wxMessage));
         return null;
 
     }

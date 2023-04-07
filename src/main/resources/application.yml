@@ -16,6 +16,8 @@ spring:
 mybatis:
   mapper-locations: classpath*:mapper/*Mapper.xml
 
+setting:
+  apiKey: Bearer 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
 
 wx:
   mp:

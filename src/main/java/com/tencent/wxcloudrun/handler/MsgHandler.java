@@ -23,24 +23,23 @@ public class MsgHandler extends AbstractHandler {
     public  static  final Map<String, Integer> dataMap = new HashMap<>();
 
     @Override
-    public WxMpXmlOutMessage handle(WxMpXmlMessage wxMessage,
-                                    Map<String, Object> context, WxMpService weixinService,
-                                    WxSessionManager sessionManager) {
+    public WxMpXmlOutMessage handle(WxMpXmlMessage  wxMessage, Map<String, Object> map, WxMpService wxMpService, WxSessionManager wxSessionManager) throws WxErrorException {
 
+        this.logger.info("\n消息handler接收到请求消息，内容：{}", JsonUtils.toJson(wxMessage));
         // 获取用户OpenID
         String openid = wxMessage.getFromUser();
 
-        String msg=OpenAIAPI.chat(wxMessage.getContent());
+        // 发送用户消息
+        String msg= OpenAIAPI.chat(wxMessage.getContent());
         WxMpKefuMessage textMessage = WxMpKefuMessage.TEXT().toUser(openid)
-            .content(msg).build();
+                .content(msg).build();
 
         try {
-            weixinService.getKefuService().sendKefuMessage(textMessage);
+            wxMpService.getKefuService().sendKefuMessage(textMessage);
         } catch (WxErrorException e) {
             e.printStackTrace();
         }
 
         return null;
-
     }
 }

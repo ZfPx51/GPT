@@ -5,6 +5,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import java.util.Map;
  * Description:
  */
 @UtilityClass
+@Slf4j
 public class OpenAIAPI {
     /**
      * 聊天端点
@@ -26,7 +29,8 @@ public class OpenAIAPI {
     /**
      * api密匙
      */
-    String apiKey = "Bearer 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";
+    @Value("${setting.apiKey}")
+    String apiKey = "Bearer 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";
 
     /**
      * 发送消息
@@ -44,20 +48,22 @@ public class OpenAIAPI {
         }});
         paramMap.put("messages", dataList);
         JSONObject message = null;
+        log.info("请求chatApi入参：{}",JSONUtil.toJsonStr(paramMap));
         try {
             String body = HttpRequest.post(chatEndpoint)
-                .header("Authorization", apiKey)
-                .header("Content-Type", "application/json")
-                .body(JsonUtils.toJson(paramMap))
-                .execute()
-                .body();
+                    .header("Authorization", apiKey)
+                    .header("Content-Type", "application/json")
+                    .body(JSONUtil.toJsonStr(paramMap))
+                    .execute()
+                    .body();
             JSONObject jsonObject = JSONUtil.parseObj(body);
+            log.info("chatAPI接口返回：{}", jsonObject);
             JSONArray choices = jsonObject.getJSONArray("choices");
             JSONObject result = choices.get(0, JSONObject.class, Boolean.TRUE);
             message = result.getJSONObject("message");
         } catch (Exception e) {
             e.printStackTrace();
-            return "欢迎加入交流Q群学习：25869543，当前环境出现问题!";
+            return "网络异常，当前环境出现问题!";
         }
         return message.getStr("content");
     }
